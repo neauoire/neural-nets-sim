@@ -965,7 +965,7 @@ function getMousePos(canvas, e) {
     return new Vec(e.clientX - rect.left, e.clientY - rect.top);
 }
 
-var DefaultNet = "dgICAAgACAAGAEoB6QAAAAAAAQAFAAEAAwAAAAEABgASAmsAAQAAAAEAAAAAAAEAAgDqAbIAAQAAAAEAAQAAAAEAAwB6AtwAAwAAAAMAAgAAAAMAAAAHAAAAAQAEAAABLAEBAAEAAQAEAAAAAQAFAAcC8AABAAAAAQAGAAAAAQAHALwBLQIAAAAAAAAAAFgCFQIBAAAAAAAAAAAAAQAAAAIAAQADAAIAAwADAAQABAAAAAAABQAFAAMAAgIzACsA7gBlACQAxQDfAA4AfgGtAS0A8gHoASUA1ABOAR0AUwBlAGwAZQBjAHQAIABhAG4AZAAgAGQAcgBhAGcAIABuAGUAdQByAG8AbgBzACAAdwBpAHQAaAAgAHQAaABlACAAbABlAGYAdAAgAG0AbwB1AHMAZQBTAGUAdAAgAHQAaAByAGUAcwBoAG8AbABkACAAdwBpAHQAaAAgAG4AdQBtAGIAZQByACAAawBlAHkAcwAgACgAMAAtADkAKQAwACAAYQBsAHcAYQB5AHMAIABmAGkAcgBlAHMAUgBpAGcAaAB0ACAAYwBsAGkAYwBrACAAbwBuACAAZgBpAGIAZQByAHMAIABhAG4AZAAgAG4AZQB1AHIAbwBuAHMAIABmAG8AcgAgAG8AcAB0AGkAbwBuAHMAQwBsAGkAYwBrACAAYQBuAGQAIABkAHIAYQBnACAAZgBpAGIAZQByAHMAIABiAGUAdAB3AGUAZQBuACAAbgBlAHUAcgBvAG4AcwB1AG4AbABlAHMAcwAgAGkAdAAgAHIAZQBjAGUAaQB2AGUAcwAgAGEAbgAgAGkAbgBoAGkAYgBpAHQA";
+var DefaultNet = "";
 
 function Sim() {
     this.selection = [];
@@ -1287,7 +1287,7 @@ function drawSim(ctx, canvas, sim) {
 }
 
 function clearCanvas(ctx, canvas) {
-    ctx.fillStyle = '#EFF0F1';
+    ctx.fillStyle = '#ffffff';
     ctx.beginPath();
     ctx.rect(0, 0, canvas.width, canvas.height);
     ctx.closePath();
@@ -1295,8 +1295,8 @@ function clearCanvas(ctx, canvas) {
 }
 
 function drawHoverRing(ctx, net, mousePos, drawingFiberToInput, drawingFiberToOutput) {
-    var INACTIVE_COLOR = '#B0B0B0';
-    var HIGHLIGHT_COLOR = '#0000FF';
+    var INACTIVE_COLOR = '#cccccc';
+    var HIGHLIGHT_COLOR = '#000000';
     
     var i;
     var cell;
@@ -1325,8 +1325,8 @@ function drawHoverRing(ctx, net, mousePos, drawingFiberToInput, drawingFiberToOu
             }
 
             radius = cell.radius + cell.connectorPadding;
-            ctx.lineWidth = 1;
-            ctx.setLineDash([4]);
+            ctx.lineWidth = 2;
+            ctx.setLineDash([2]);
 
             angleOffset = cell.angle !== ANGLE_EAST ? 0 : Math.PI * 1;
 
@@ -1347,7 +1347,7 @@ function drawHoverRing(ctx, net, mousePos, drawingFiberToInput, drawingFiberToOu
 }
 
 function drawSelectBox(ctx, selectTool, mousePos) {
-    ctx.strokeStyle = '#009900';
+    ctx.strokeStyle = '#ff0000';
     ctx.lineWidth = 1;
     ctx.setLineDash([4]);
 
@@ -1363,7 +1363,7 @@ function drawSelectBox(ctx, selectTool, mousePos) {
 }
 
 function drawTextLabels(ctx, net, selection, fontsize){
-    ctx.font =  fontsize.toString() + 'pt monospace';
+    ctx.font =  fontsize.toString() + 'pt input_mono_medium';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -1374,17 +1374,6 @@ function drawTextLabels(ctx, net, selection, fontsize){
             marked[selection[i].index] = true;
         }
     }
-
-
-
-    /*
-        var bounds = sel[i].bounds(fontsize);
-
-        ctx.beginPath();
-        ctx.moveTo(bounds.min.x, bounds.max.y);
-        ctx.lineTo(bounds.max.x, bounds.max.y);
-        ctx.stroke();
-        */
 
     var label;
     var i;
@@ -1403,7 +1392,7 @@ function drawTextLabels(ctx, net, selection, fontsize){
 function drawCells(ctx, net, labelFontSize) {
     // draw the front of the cells
     // quite
-    ctx.fillStyle = '#444444';
+    ctx.fillStyle = '#000000';
     ctx.strokeStyle = '#000000';
     drawCellFronts(ctx, net, false);
 
@@ -1416,11 +1405,8 @@ function drawCells(ctx, net, labelFontSize) {
     ctx.fillStyle = '#FFFFFF';
     drawCellBacks(ctx, net);
 
-    ctx.strokeStyle = '#FFFFFF';
-    drawCellArrows(ctx, net);
-
     // draw the selected cells
-    ctx.strokeStyle = '#009900';
+    ctx.strokeStyle = '#000000';
     drawCellSelection(ctx, net, gSim.selection, labelFontSize);
 
     // draw the text
@@ -1434,16 +1420,15 @@ function drawCellLabels(ctx, net) {
     var labelPos;
 
     ctx.fillStyle = '#000000';
-    ctx.font = '14pt monospace';
+    ctx.font = '10pt input_mono_medium';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     for (i = 0; i < net.cells.length; ++i) {
         cell = net.cells[i];
         dir = Vec.fromAngle(cell.angle);
-
-        labelPos = Vec.sub(cell.pos, Vec.scale(dir, cell.radius * 0.5));
-        ctx.fillText(String(cell.threshold), labelPos.x, labelPos.y);
+        labelPos = Vec.sub(cell.pos, Vec.scale(dir, cell.radius * 0.4));
+        ctx.fillText(String(cell.threshold), labelPos.x, labelPos.y+1);
     }
 }
 
@@ -1485,18 +1470,6 @@ function drawCellBacks(ctx, net) {
     ctx.stroke();
 }
 
-function drawCellArrows(ctx, net) {
-    ctx.beginPath();
-    net.cells.forEach(cell => {
-        var dir = Vec.fromAngle(cell.angle);
-        ctx.moveTo(cell.pos.x + dir.x * 4.0, cell.pos.y + cell.radius * 0.4);
-        ctx.lineTo(cell.pos.x + dir.x * cell.radius * 0.6, cell.pos.y);
-        ctx.lineTo(cell.pos.x + dir.x * 4.0, cell.pos.y - cell.radius * 0.4);
-    });
-    ctx.stroke();
-}
-
-
 function drawCellSelection(ctx, net, selection, fontsize) {
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -1507,26 +1480,8 @@ function drawCellSelection(ctx, net, selection, fontsize) {
         }
     });
     ctx.stroke();
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
 }
-
-/*
-function drawBranches(ctx, net) {
-    var i;
-    var b;
-    ctx.strokeStyle = '#000000';
-    ctx.fillStyle = '#000000';
-
-    for (i = 0; i < net.branches.length; ++i) {
-        b = net.branches[i];
-
-        ctx.beginPath();
-        ctx.arc(b.pos.x, b.pos.y, 5.0, 0.0, Math.PI * 2.0, false);
-        ctx.fill();
-        ctx.stroke();
-    }
-}
-*/
 
 function stackedOffset(spread, j, n) {
     return spread * (j - (n - 1) * 0.5);
@@ -1583,7 +1538,7 @@ function drawFibers(ctx, net) {
     updateFiberPoints(net);
 
     // draw quiet fibers
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 3;
     ctx.strokeStyle = '#000000';
     drawFiberPaths(ctx, net, false);
 
@@ -1593,13 +1548,13 @@ function drawFibers(ctx, net) {
     drawFiberPaths(ctx, net, true);
 
     // draw quiet connectors
-    ctx.lineWidth = 1;
-    ctx.fillStyle = '#FFFFFF';
+    ctx.lineWidth = 2;
+    ctx.fillStyle = '#ffffff';
     ctx.strokeStyle = '#000000';
     drawConnectorPaths(ctx, net, false);
 
     // draw active connectors
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     ctx.strokeStyle = '#000000';
     ctx.fillStyle = '#FF0000';
     drawConnectorPaths(ctx, net, true);
